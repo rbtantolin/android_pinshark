@@ -1,11 +1,7 @@
 from py3pin.Pinterest import Pinterest
 from bs4 import BeautifulSoup
 import requests
-import tkinter as tk
-from tkinter import ttk, filedialog
 from datetime import datetime, timezone
-from tkinter.filedialog import asksaveasfilename
-from tkinter import filedialog
 from random import randint
 from time import sleep
 from tqdm import tqdm
