@@ -9,8 +9,6 @@ from tkinter import filedialog
 from random import randint
 from time import sleep
 from tqdm import tqdm
-import pandas as pd
-import xlrd
 import json
 import os
 import colorama
@@ -18,8 +16,6 @@ from colorama import Fore, Style
 import time
 import datetime
 from datetime import datetime
-import random
-import keyboard
 
 global pinterest
 os.system(f'mode con: cols={76}')
@@ -151,15 +147,15 @@ def open_file_excel():
 
     return file_path
 
-def save_excel(targeted_pins):
-    save_path = filedialog.asksaveasfilename(
-        defaultextension='.xlsx', 
-        initialfile = ''
-        )
+# def save_excel(targeted_pins):
+#     save_path = filedialog.asksaveasfilename(
+#         defaultextension='.xlsx', 
+#         initialfile = ''
+#         )
     
-    pd.DataFrame(targeted_pins).to_excel(save_path, index=False)
+#     pd.DataFrame(targeted_pins).to_excel(save_path, index=False)
     
-    print(f'{len(targeted_pins)} pins saved')
+#     print(f'{len(targeted_pins)} pins saved')
     
 def process_and_sort_pins(pinterest, data):
     sorted_pins = []
@@ -231,9 +227,11 @@ def process_and_sort_pins(pinterest, data):
     if top_n_sort == 'y' and top_n is not None:
         sorted_pins = sorted(sorted_pins, key=lambda x: x['Saves'], reverse=True)[:top_n]
     
-    print(f'{sorted_pins['Pin ID']}:{sorted_pins['Saves']}')    
-    # Tampilkan data pada GUI
-    # display_data_tkinter(sorted_pins)
+    for pin in sorted_pins:
+        keys = list(pin.keys())
+        selected_keys = [keys[0], keys[1]]
+        for key in selected_keys:
+            print(f"{key}: {pin[key]}")
 
 
 def info_pin():
@@ -297,8 +295,8 @@ def info_board_feed(pinterest):
     
     return board_feed_data
 
-def board_feed_excel():
-    save_excel(targeted_pins=info_board_feed(pinterest=pinterest))
+# def board_feed_excel():
+#     save_excel(targeted_pins=info_board_feed(pinterest=pinterest))
     
 def info_pin_search(pinterest):
     result=pinterest.search(scope='pins', query=input('Search Query: '))
@@ -325,70 +323,52 @@ def info_pin_search(pinterest):
 def single_repin(pinterest):
     pinterest.repin(pin_id=input('Pin ID: '), board_id=input('Board ID: '))
         
-def excel_repin(pinterest):
-     
-    pins = pd.read_excel(
-        open_file_excel(), 
-        sheet_name='Sheet1', 
-        dtype=str
-        )
+# def image_download():
     
-    condition = int(input('Repin Methode 1) All Pins 2) Partial: '))
-    board_id = input('Board ID: ')
+#     path_folder = filedialog.askdirectory()
     
-    if condition == 1:
-        for x in tqdm(pins['Pin ID']):
-            pinterest.repin(pin_id=x, board_id=input('Board ID: '))
-    elif condition == 2:
-        for x in tqdm(pins['Pin ID'].iloc[int(input('Start Point:')):int(input('Stop Point:'))]):
-            pinterest.repin(pin_id=x, board_id=board_id)
+#     if not os.path.exists(path_folder):
+#         os.makedirs(path_folder)
+        
+#     print(f'Save to: {path_folder}')
+    
+    
+#     while True:
+#         method = int(input('Download image from - 1)Search 2)Board 3)Excel : '))
+        
+#         if method == 1:
+#             pins = info_pin_search(pinterest)
+#             break
+        
+#         elif method == 2:
+#             pins = info_board_feed(pinterest)
+#             print(pins)
+#             break
+        
+#         elif method ==3:
             
-def image_download():
-    
-    path_folder = filedialog.askdirectory()
-    
-    if not os.path.exists(path_folder):
-        os.makedirs(path_folder)
-        
-    print(f'Save to: {path_folder}')
-    
-    
-    while True:
-        method = int(input('Download image from - 1)Search 2)Board 3)Excel : '))
-        
-        if method == 1:
-            pins = info_pin_search(pinterest)
-            break
-        
-        elif method == 2:
-            pins = info_board_feed(pinterest)
-            print(pins)
-            break
-        
-        elif method ==3:
-            
-            file_path = filedialog.askopenfilename()
-            pins = pd.read_excel(file_path, sheet_name='Sheet1', dtype=str).to_dict(orient='records')
+#             file_path = filedialog.askopenfilename()
+#             pins = pd.read_excel(file_path, sheet_name='Sheet1', dtype=str).to_dict(orient='records')
                         
-            break
+#             break
         
-        else:
-            print('Wrong Number. Try Again')
-            pass
+#         else:
+#             print('Wrong Number. Try Again')
+#             pass
     
-    print('Start to download images')
-    for pin in tqdm(pins):
-        try:
-            info = pinterest.load_pin(pin_id=pin['Pin ID'])
-            url = info['images']['orig']['url']
+#     print('Start to download images')
+#     for pin in tqdm(pins):
+#         try:
+#             info = pinterest.load_pin(pin_id=pin['Pin ID'])
+#             url = info['images']['orig']['url']
             
-            download_image(url, path_folder + '/' + pin['Pin ID'] + '.' + url.rsplit('/' and '.', 1)[-1])
+#             download_image(url, path_folder + '/' + pin['Pin ID'] + '.' + url.rsplit('/' and '.', 1)[-1])
         
-        except (TypeError, IndexError) as e:
-            pass
+#         except (TypeError, IndexError) as e:
+#             pass
     
-    print("Existing files:" + str(countrSkip))
-    print("New files:" + str(countrDnld))    
+#     print("Existing files:" + str(countrSkip))
+#     print("New files:" + str(countrDnld))    
 
 # def comment(pinterest=pinterest):
 #     comment_mode = int(input('Comment Based: 1)Homefeed 2)Search 3)Excel: '))
@@ -452,56 +432,56 @@ def upload_pin_direct(pinterest):
             link=None
             )
 
-def built_upload_excel():
-    data = []
+# def built_upload_excel():
+#     data = []
     
-    for images in tqdm(filedialog.askopenfilenames(filetypes=[("Image Files", ".jpg .png")])):
-        data.append(images)
+#     for images in tqdm(filedialog.askopenfilenames(filetypes=[("Image Files", ".jpg .png")])):
+#         data.append(images)
     
-    if len(data) > 0:
-        address = {
-            'Image Address' : data,
-            'Title' : None,
-            'Description' : None,
-            'Link' : None
-            }
-        pd.DataFrame(address).to_excel(
-            filedialog.asksaveasfilename(
-            filetypes=[("Excel Files", ".xlsx")], 
-            defaultextension='.xlsx'
-            )
-            )
-    print(Fore.LIGHTGREEN_EX + 'Built complete. Check the file in your directory')
+#     if len(data) > 0:
+#         address = {
+#             'Image Address' : data,
+#             'Title' : None,
+#             'Description' : None,
+#             'Link' : None
+#             }
+#         pd.DataFrame(address).to_excel(
+#             filedialog.asksaveasfilename(
+#             filetypes=[("Excel Files", ".xlsx")], 
+#             defaultextension='.xlsx'
+#             )
+#             )
+#     print(Fore.LIGHTGREEN_EX + 'Built complete. Check the file in your directory')
 
-def upload_pin_excel(pinterest):
-    results = pd.read_excel(filedialog.askopenfilename(filetypes=[("Excel Files", ".xlsx")]), 
-            sheet_name='Sheet1', dtype=str).to_dict('records')
+# def upload_pin_excel(pinterest):
+#     results = pd.read_excel(filedialog.askopenfilename(filetypes=[("Excel Files", ".xlsx")]), 
+#             sheet_name='Sheet1', dtype=str).to_dict('records')
     
-    print(f"Open excel file with {len(results)} ID ready to pin")
-    board_id = input('Board ID Destination: ')
-    upload = int(input('1.Complete 2.Nolink 3.OnlyPic 4.Link: '))
-    start = int(input('Start Point:'))
-    stop = int(input('Stop Point:'))
+#     print(f"Open excel file with {len(results)} ID ready to pin")
+#     board_id = input('Board ID Destination: ')
+#     upload = int(input('1.Complete 2.Nolink 3.OnlyPic 4.Link: '))
+#     start = int(input('Start Point:'))
+#     stop = int(input('Stop Point:'))
            
-    upload_options = {
-    1: {"description": lambda x: x['Description'], "title": lambda x: x['Title'], "link": lambda x: x['Link']},
-    2: {"description": lambda x: x['Description'], "title": lambda x: x['Title'], "link": lambda x: None},
-    3: {"description": lambda x: None, "title": lambda x: x['Title'], "link": lambda x: None},
-    4: {"description": lambda x: None, "title": lambda x: None, "link": lambda x: x['Link']}
-}
+#     upload_options = {
+#     1: {"description": lambda x: x['Description'], "title": lambda x: x['Title'], "link": lambda x: x['Link']},
+#     2: {"description": lambda x: x['Description'], "title": lambda x: x['Title'], "link": lambda x: None},
+#     3: {"description": lambda x: None, "title": lambda x: x['Title'], "link": lambda x: None},
+#     4: {"description": lambda x: None, "title": lambda x: None, "link": lambda x: x['Link']}
+# }
 
-# Loop untuk upload pin
-    for x in tqdm(results[start:stop]):
-        params = upload_options.get(upload, {})
-        pinterest.upload_pin(
-            board_id=board_id,
-            image_file=x['Image Address'],
-            description=params["description"](x),
-            title=params["title"](x),
-            section_id=None,
-            link=params["link"](x)
-        )
-        sleep(randint(40, 60))
+# # Loop untuk upload pin
+#     for x in tqdm(results[start:stop]):
+#         params = upload_options.get(upload, {})
+#         pinterest.upload_pin(
+#             board_id=board_id,
+#             image_file=x['Image Address'],
+#             description=params["description"](x),
+#             title=params["title"](x),
+#             section_id=None,
+#             link=params["link"](x)
+#         )
+#         sleep(randint(40, 60))
         
 
 def save_local():
@@ -581,61 +561,61 @@ def load_local():
             print("Tidak ada file di dalam subfolder ini.")
 
 
-def display_data_tkinter(data):
-    root = tk.Tk()
-    root.title("Pinterest Pin Data")
-    root.geometry("800x600")  # Atur lebar window menjadi 800px dan tinggi 600px
+# def display_data_tkinter(data):
+#     root = tk.Tk()
+#     root.title("Pinterest Pin Data")
+#     root.geometry("800x600")  # Atur lebar window menjadi 800px dan tinggi 600px
 
-    # Frame utama untuk menambahkan scrollbar
-    frame = tk.Frame(root)
-    frame.pack(fill=tk.BOTH, expand=True)
+#     # Frame utama untuk menambahkan scrollbar
+#     frame = tk.Frame(root)
+#     frame.pack(fill=tk.BOTH, expand=True)
 
-    # Buat scrollbar vertikal dan horizontal
-    tree_x_scroll = tk.Scrollbar(frame, orient="horizontal")
-    tree_y_scroll = tk.Scrollbar(frame, orient="vertical")
+#     # Buat scrollbar vertikal dan horizontal
+#     tree_x_scroll = tk.Scrollbar(frame, orient="horizontal")
+#     tree_y_scroll = tk.Scrollbar(frame, orient="vertical")
 
-    # Buat tabel menggunakan Treeview
-    columns = list(data[0].keys())
-    tree = ttk.Treeview(
-        frame, columns=columns, show='headings', 
-        xscrollcommand=tree_x_scroll.set, 
-        yscrollcommand=tree_y_scroll.set
-    )
+#     # Buat tabel menggunakan Treeview
+#     columns = list(data[0].keys())
+#     tree = ttk.Treeview(
+#         frame, columns=columns, show='headings', 
+#         xscrollcommand=tree_x_scroll.set, 
+#         yscrollcommand=tree_y_scroll.set
+#     )
     
-    tree_x_scroll.config(command=tree.xview)
-    tree_y_scroll.config(command=tree.yview)
-    tree_x_scroll.pack(side=tk.BOTTOM, fill=tk.X)
-    tree_y_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+#     tree_x_scroll.config(command=tree.xview)
+#     tree_y_scroll.config(command=tree.yview)
+#     tree_x_scroll.pack(side=tk.BOTTOM, fill=tk.X)
+#     tree_y_scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
-    for col in columns:
-        tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
-        tree.column(col, anchor='center', width=100)  # Atur lebar kolom agar pas di window 800px
+#     for col in columns:
+#         tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
+#         tree.column(col, anchor='center', width=100)  # Atur lebar kolom agar pas di window 800px
     
-    for item in data:
-        tree.insert('', 'end', values=[item[col] for col in columns])
+#     for item in data:
+#         tree.insert('', 'end', values=[item[col] for col in columns])
     
-    tree.pack(fill=tk.BOTH, expand=True)
+#     tree.pack(fill=tk.BOTH, expand=True)
 
-    # Tombol Save
-    save_button = tk.Button(root, text="Save", command=lambda: save_excel(data))
-    save_button.pack(side=tk.LEFT, padx=10, pady=5)
+#     # Tombol Save
+#     save_button = tk.Button(root, text="Save", command=lambda: save_excel(data))
+#     save_button.pack(side=tk.LEFT, padx=10, pady=5)
 
-    # Tombol Close
-    close_button = tk.Button(root, text="Close", command=root.destroy)
-    close_button.pack(side=tk.RIGHT, padx=10, pady=5)
+#     # Tombol Close
+#     close_button = tk.Button(root, text="Close", command=root.destroy)
+#     close_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
-    root.mainloop()
+#     root.mainloop()
 
-def sort_column(tree, col, reverse):
-    l = [(tree.set(k, col), k) for k in tree.get_children('')]
-    l.sort(reverse=reverse)
+# def sort_column(tree, col, reverse):
+#     l = [(tree.set(k, col), k) for k in tree.get_children('')]
+#     l.sort(reverse=reverse)
 
-    # Reorder items in sorted positions
-    for index, (val, k) in enumerate(l):
-        tree.move(k, '', index)
+#     # Reorder items in sorted positions
+#     for index, (val, k) in enumerate(l):
+#         tree.move(k, '', index)
 
-    # Toggle sort order for next click
-    tree.heading(col, command=lambda _col=col: sort_column(tree, _col, not reverse))
+#     # Toggle sort order for next click
+#     tree.heading(col, command=lambda _col=col: sort_column(tree, _col, not reverse))
 
 def ok(pinterest):
     print(pinterest.username)    
