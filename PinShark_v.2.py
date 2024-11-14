@@ -623,7 +623,7 @@ def main():
         if pinterest:
             while True:
                 pin_search = pinterest.search(scope='pins', query='poster print')
-                hasil = pin_search[0:10]
+                hasil = pin_search
                 pins = process_and_sort_pins(pinterest=pinterest, data=hasil)
                 pilihan = input("Apakah Anda ingin menggunakan akun lain? (y/n): ").strip().lower()
                 if pilihan == 'y':
